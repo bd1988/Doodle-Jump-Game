@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let startPoint = 150;
     let doodlerBottomSpace = startPoint;
     let isGameOver = false;
+    let started = false;
     let platformCount = 5;
     let platforms = [];
     let upTimerId
@@ -223,7 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
             jumpSound = new sound("./sounds/jump.wav");
             gameOverSound = new sound("./sounds/game-over.wav");
             jump();
-            document.addEventListener('keyup', control);            
+            document.addEventListener('keyup', control);
+            started = true;            
         }
     }
 
@@ -236,12 +238,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function speedChange(e) {
-        if ((e.key === 's') && (speed == 1)) {
+        if ((e.key === 's') && (speed == 1) && !started) {
             speed = 2;
             speedInfo.innerText = "2x";
-        } else if ((e.key === 's') && (speed == 2)) {
+        } else if ((e.key === 's') && (speed == 2) && !started) {
             speed = 1;
-            speedInfo.innerText = "2x";
+            speedInfo.innerText = "1x";
         }
     }
 
