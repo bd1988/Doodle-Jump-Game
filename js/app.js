@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector(".grid");
     const doodler = document.createElement('div');
-    const scoreBox = document.createElement('div');
+    const gameOverMsg = document.createElement('div');
+    const showScore = document.getElementById('score');
     const startButton = document.createElement('div');
+    const speedInfo = document.getElementById('speed');
     let doodlerLeftSpace = 50;
     let startPoint = 150;
     let doodlerBottomSpace = startPoint;
@@ -18,7 +20,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let rightTimerId
     let score = 0;
     let jumpSound;
+    let gameOverSound;
+    let speed = 1;
     
+    function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
 
     function createDoodler() {
         grid.appendChild(doodler);
@@ -65,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     firstPlatform.classList.remove('platform');
                     platforms.shift();
                     score++;
+                    showScore.innerText = score;
                     let newPlatform = new Platform(600);
                     platforms.push(newPlatform);
                 }
@@ -82,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (doodlerBottomSpace > startPoint + 200) {
                 fall();
             }
-        }, 30)
+        }, 30/speed)
     }
     
     function fall() {
@@ -107,19 +126,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     jump();
                 }
             })
-        }, 30)
+        }, 30/speed)
     }
 
     function gameOver() {
         console.log('game over');
         isGameOver = true;
-        scoreBox.innerText = "Your score: " + score;     
-        grid.appendChild(scoreBox);
+        gameOverMsg.innerText = 'GAME OVER!!!';
+        gameOverMsg.classList.add('game-over')     
+        grid.appendChild(gameOverMsg);
         document.removeEventListener('keyup', control)
         clearInterval(upTimerId);
         clearInterval(downTimerId);
         clearInterval(leftTimerId);
         clearInterval(rightTimerId);
+        gameOverSound.play();
+        fallDown();
+    }
+
+    function fallDown() {
+        let rotation = 7.2;
+        const moveUpAndTurnDown = setInterval(function() {
+            rotation += 7.2;
+            doodlerBottomSpace += 4;
+            doodler.style.bottom = doodlerBottomSpace + 'px';
+            doodler.style.transform = "rotate(" + rotation + "deg)";
+        }, 20);
+        const stopGoingUp = setTimeout(function(){
+            clearInterval(moveUpAndTurnDown);
+            const moveDwon = setInterval(function() {
+                rotation += 7.2;
+                doodlerBottomSpace -= 4;
+                doodler.style.bottom = doodlerBottomSpace + 'px';
+                doodler.style.transform = "rotate(" + rotation + "deg)";
+            }, 20)
+            if (doodlerBottomSpace == -1000) {
+                clearInterval(moveDwon);
+                grid.removeChild(doodler);
+            }
+        }, 500)
+       
     }
 
     function control(e) {
@@ -144,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             doodlerLeftSpace -= 5;
             doodler.style.left = doodlerLeftSpace + 'px';
             } else moveRight();
-        }, 30)
+        }, 30/speed)
     }
 
     function moveRight() {
@@ -159,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 doodlerLeftSpace += 5;
                 doodler.style.left = doodlerLeftSpace + 'px';
             } else moveLeft();
-        }, 30)
+        }, 30/speed)
     }
 
     function moveStraight() {
@@ -167,40 +213,42 @@ document.addEventListener('DOMContentLoaded', () => {
         isGoingRight = false;
         clearInterval(leftTimerId);
         clearInterval(rightTimerId);
-    }
-
-    function sound(src) {
-        this.sound = document.createElement("audio");
-        this.sound.src = src;
-        this.sound.setAttribute("preload", "auto");
-        this.sound.setAttribute("controls", "none");
-        this.sound.style.display = "none";
-        document.body.appendChild(this.sound);
-        this.play = function(){
-            this.sound.play();
-        }
-        this.stop = function(){
-            this.sound.pause();
-        }    
-    }
+    }   
 
     function start() {
         if (!isGameOver) {
             createPlatforms();
             createDoodler();
-            setInterval(movePlatforms, 30);
+            setInterval(movePlatforms, 30/speed);
             jumpSound = new sound("./sounds/jump.wav");
+            gameOverSound = new sound("./sounds/game-over.wav");
             jump();
             document.addEventListener('keyup', control);            
         }
     }
 
+    function startBtn(e) {
+        if (e.key === " ") {
+            document.removeEventListener('keyup', startBtn);           
+            grid.removeChild(startButton);
+            start();
+        }
+    }
+
+    function speedChange(e) {
+        if ((e.key === 's') && (speed == 1)) {
+            speed = 2;
+            speedInfo.innerText = "2x";
+        } else if ((e.key === 's') && (speed == 2)) {
+            speed = 1;
+            speedInfo.innerText = "2x";
+        }
+    }
+
     startButton.classList.add('startBtn');
-    startButton.innerText = "Start Game!";
-    startButton.addEventListener('click', function(e) {
-        start();
-        grid.removeChild(startButton);
-    })
+    startButton.innerText = "PRESS SPACE BUTTON TO START!";
+    document.addEventListener('keyup', startBtn);
+    document.addEventListener('keyup', speedChange);    
     grid.appendChild(startButton);
     
 })

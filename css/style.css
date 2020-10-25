@@ -1,11 +1,57 @@
-.grid {
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;    
+}
+
+.game {
+    display: flex;
+    width: 500px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url(../img/background.jpg);
+    margin: 100px auto;
+}
+
+.grid {    
     width: 400px;
     height: 600px;
-    background-color: yellow;
-    position: relative;
-    background-image: url(../img/background_Axa_Warsaw.jpg);
-    background-size: contain;
-    background-repeat: no-repeat;
+    position: relative; 
+}
+
+.side-panel {   
+    width: 94px;
+    height: 594px;
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 15px;
+    border: 2px solid grey;
+    margin: 3px;
+}
+
+p.show-score, p.speed-info, p.increase, p.controls-info, p.reset {
+    color: gold;
+    font-size: 24px;
+    font-weight: 900;    
+    text-align: center;
+    animation: startBtnTextShadow 1s infinite alternate;
+}
+
+p.score, p.speed, p.controls, p.f5 {
+    color: red;
+    text-shadow: 0 0 3px yellow;
+    font-size: 40px;
+    text-align: center;
+    line-height: 90px;
+}
+
+p.controls {
+    font-size: 27px;
+    font-weight: 900;
 }
 
 .doodler {
@@ -20,20 +66,41 @@
 .platform {
     width: 85px;
     height: 15px;
-    background-color: green;
+    background-color: blue;
     position: absolute;
+    border: 2px solid violet;
+    border-radius: 5px;
 }
 
 .startBtn {
-    width: 300px;
-    height: 75px;
+    width: 350px;
+    height: 150px;
     position: absolute;
-    left: 50px;
+    left: 25px;
     bottom: 50px;
-    border: 1px solid grey;
-    color: goldenrod;
-    font-size: 48px;
-    font-weight: 900;
-    line-height: 75px;
+    border: 2px solid grey;
+    color: gold;
+    font-size: 30px;
+    font-weight: 900;    
     text-align: center;
+    background-color: rgba(0, 0, 0, 0.75);    
+    line-height: 52px;
+    letter-spacing: 5px;
+    animation: startBtnTextShadow 2s infinite alternate;
+}
+
+@keyframes startBtnTextShadow {
+    from {text-shadow: none;}
+    to {text-shadow: 0 0 10px #FF0000, 0 0 14px #0000FF;}
+}
+
+.game-over {
+    position: absolute;
+    color: red;
+    text-shadow: 0 0 10px yellow;
+    letter-spacing: 3px;
+    text-align: center;
+    font-size: 90px;
+    font-weight: 900;
+    bottom: 200px;
 }
