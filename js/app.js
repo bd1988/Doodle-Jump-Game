@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector(".grid");
     const doodler = document.createElement('div');
+    const scoreBox = document.createElement('div');
+    const startButton = document.createElement('div');
     let doodlerLeftSpace = 50;
     let startPoint = 150;
     let doodlerBottomSpace = startPoint;
@@ -14,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let isGoingRight = false;
     let leftTimerId
     let rightTimerId
+    let score = 0;
+    let jumpSound;
+    
 
     function createDoodler() {
         grid.appendChild(doodler);
@@ -54,6 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 platform.bottom -= 4;
                 let visual = platform.visual;
                 visual.style.bottom = platform.bottom + 'px';
+
+                if (platform.bottom < 10) {
+                    let firstPlatform = platforms[0].visual;
+                    firstPlatform.classList.remove('platform');
+                    platforms.shift();
+                    score++;
+                    let newPlatform = new Platform(600);
+                    platforms.push(newPlatform);
+                }
             })
         }
     }
@@ -61,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function jump() {
         clearInterval(downTimerId);
         isJumping = true;
+        jumpSound.play();
         upTimerId = setInterval(function() {
             doodlerBottomSpace += 20;
             doodler.style.bottom = doodlerBottomSpace +'px';
@@ -98,8 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameOver() {
         console.log('game over');
         isGameOver = true;
+        scoreBox.innerText = "Your score: " + score;     
+        grid.appendChild(scoreBox);
+        document.removeEventListener('keyup', control)
         clearInterval(upTimerId);
         clearInterval(downTimerId);
+        clearInterval(leftTimerId);
+        clearInterval(rightTimerId);
     }
 
     function control(e) {
@@ -108,11 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (e.key === 'ArrowRight') {
             moveRight();
         } else if (e.key === 'ArrowUp') {
-            //move Straight
+            moveStraight();
         }
     }
 
     function moveLeft() {
+        clearInterval(leftTimerId); //czyścimy powatarzające się interwały
         if (isGoingRight) {
             clearInterval(rightTimerId);
             isGoingRight = false;
@@ -127,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function moveRight() {
+        clearInterval(rightTimerId); //czyścimy powtarzające się interwały
         if (isGoingLeft) {
             clearInterval(leftTimerId);
             isGoingLeft - false;
@@ -147,16 +169,38 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(rightTimerId);
     }
 
+    function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
+
     function start() {
         if (!isGameOver) {
             createPlatforms();
             createDoodler();
             setInterval(movePlatforms, 30);
+            jumpSound = new sound("./sounds/jump.wav");
             jump();
-            document.addEventListener('keyup', control)
+            document.addEventListener('keyup', control);            
         }
     }
 
-    // Attach button
-    start()
+    startButton.classList.add('startBtn');
+    startButton.innerText = "Start Game!";
+    startButton.addEventListener('click', function(e) {
+        start();
+        grid.removeChild(startButton);
+    })
+    grid.appendChild(startButton);
+    
 })

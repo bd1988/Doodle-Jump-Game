@@ -3,13 +3,18 @@
     height: 600px;
     background-color: yellow;
     position: relative;
+    background-image: url(../img/background_Axa_Warsaw.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .doodler {
     width: 60px;
-    height: 85px;
-    background: red;
+    height: 85px;    
     position: absolute;
+    background-image: url(../img/doodler.png);
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .platform {
@@ -17,4 +22,18 @@
     height: 15px;
     background-color: green;
     position: absolute;
+}
+
+.startBtn {
+    width: 300px;
+    height: 75px;
+    position: absolute;
+    left: 50px;
+    bottom: 50px;
+    border: 1px solid grey;
+    color: goldenrod;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 75px;
+    text-align: center;
 }
